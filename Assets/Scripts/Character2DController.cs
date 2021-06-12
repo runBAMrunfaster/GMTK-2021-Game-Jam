@@ -7,11 +7,17 @@ public class Character2DController : MonoBehaviour
     [SerializeField] float MovementSpeed = 1;
     [SerializeField] float jumpForce = 1;
     private Rigidbody2D rigidbody;
-    //[SerializeField] Vector2 holdSpot = new Vector2(-0.3, 1.5);
+    [SerializeField] float holdPointX = -0.3f;
+    [SerializeField] float holdPointY = 1.5f;
+    Vector2 holdSpot;
     private bool isGrounded;
     private enum HeavyState {Light, Heavy};
     [SerializeField] private HeavyState heavyState = HeavyState.Heavy;
     bool isTouchingInteractable = false;
+    GameObject touchedInteractable;
+    bool isHoldingTotem = false;
+    GameObject targetInteractable;
+    GameObject heldTotem;
     
     //Facing tracking
     private enum Facing {Left, Right};
@@ -22,6 +28,7 @@ public class Character2DController : MonoBehaviour
     {
         rigidbody = GetComponent<Rigidbody2D>();
         isGrounded = true;
+        holdSpot = new Vector2(holdPointX, holdPointY);
     }
 
     // Update is called once per frame
@@ -31,7 +38,7 @@ public class Character2DController : MonoBehaviour
         transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
         JumpInput();
         FacingTracking();
-       
+        TotemInteraction();
     }
 
 
@@ -46,11 +53,13 @@ public class Character2DController : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other) 
     {
         isTouchingInteractable = true;
+        targetInteractable = other.gameObject;
     }
 
     void OnTriggerExit2D(Collider2D other) 
     {
         isTouchingInteractable = false;
+        targetInteractable = null;
     }
 
     private void JumpInput()
@@ -77,7 +86,28 @@ public class Character2DController : MonoBehaviour
 
     private void TotemInteraction()
     {
-        
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            switch(heavyState)
+            {
+                case HeavyState.Light:
+                if(isTouchingInteractable && targetInteractable.tag == "Totem")
+                {
+                    targetInteractable.transform.parent = this.gameObject.transform;
+                    targetInteractable.transform.localPosition = holdSpot;
+                    heldTotem = targetInteractable;
+                    heavyState = HeavyState.Heavy;
+                }
+                break;
+
+                case HeavyState.Heavy:
+                heldTotem.transform.parent = null;
+                heldTotem = null;
+                heavyState = HeavyState.Light;
+                break;
+
+            }
+        }
     }
 
 
