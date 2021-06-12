@@ -18,6 +18,8 @@ public class Character2DController : MonoBehaviour
     bool isHoldingTotem = false;
     GameObject targetInteractable;
     GameObject heldTotem;
+
+    Animator animator;
     
     //Facing tracking
     private enum Facing {Left, Right};
@@ -29,6 +31,7 @@ public class Character2DController : MonoBehaviour
         rigidbody = GetComponent<Rigidbody2D>();
         isGrounded = true;
         holdSpot = new Vector2(holdPointX, holdPointY);
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -39,6 +42,7 @@ public class Character2DController : MonoBehaviour
         JumpInput();
         FacingTracking();
         TotemInteraction();
+        AnimationController();
     }
 
 
@@ -47,6 +51,14 @@ public class Character2DController : MonoBehaviour
         if(collision.gameObject.tag == "Ground")
         {
             isGrounded = true;
+        }
+    }
+
+       void OnCollisionExit2D(Collision2D collision)
+    {
+        if(collision.gameObject.tag == "Ground")
+        {
+            isGrounded = false;
         }
     }
 
@@ -109,7 +121,33 @@ public class Character2DController : MonoBehaviour
             }
         }
     }
+    
+    private void AnimationController()
+    {
+        if(Input.GetAxis("Horizontal") != 0)
+        {
+            animator.SetBool("isMoving", true);
+        }
 
+        else
+        {
+            animator.SetBool("isMoving", false);
+        }
+
+        if(Input.GetButtonDown("Jump"))
+        {
+            animator.SetTrigger("Jump");
+        }
+
+        if(isGrounded)
+        {
+            animator.SetBool("isGrounded", true);
+        }
+        else 
+        {
+            animator.SetBool("isGrounded", false);
+        }
+    }
 
     private void FacingTracking()
     {
@@ -127,7 +165,7 @@ public class Character2DController : MonoBehaviour
     }
     private void GroundDetection()
     {
-
+        
     }
 
 }
