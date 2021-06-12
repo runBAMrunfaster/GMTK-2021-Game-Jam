@@ -11,14 +11,25 @@ public class Character2DController : MonoBehaviour
     [SerializeField] float holdPointY = 1.5f;
     Vector2 holdSpot;
     private bool isGrounded;
-    private enum HeavyState {Light, Heavy};
+    private enum HeavyState {Light, Heavy, Summoning};
     [SerializeField] private HeavyState heavyState = HeavyState.Heavy;
+    private HeavyState storedHeavyState;
     bool isTouchingInteractable = false;
     GameObject touchedInteractable;
     bool isHoldingTotem = false;
     GameObject targetInteractable;
     GameObject heldTotem;
     Animator animator;
+
+    //Ability Checks
+    bool hasBlink = false;
+    bool hasDoubleJump = false;
+    bool hasSuperJump = false;
+    bool hasDash = false;
+    bool hasBaloonJump = false;
+
+    int jumpCounter = 1;
+   [SerializeField] int jumpCounterMax = 1;
 
     //Blink
     [SerializeField] GameObject blinkGhost;
@@ -42,11 +53,55 @@ public class Character2DController : MonoBehaviour
     void Update()
     {
         var movement = Input.GetAxis("Horizontal");
-        transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
-        JumpInput();
-        FacingTracking();
-        TotemInteraction();
-        AnimationController();
+        switch (heavyState)
+        {
+            
+            case HeavyState.Light:
+                transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
+                JumpInput();
+                FacingTracking();
+                TotemInteraction();
+                AnimationController();
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    storedHeavyState = heavyState;
+                    heavyState = HeavyState.Summoning;
+                }
+                break;
+
+            case HeavyState.Heavy:
+                movement = Input.GetAxis("Horizontal");
+                transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
+                JumpInput();
+                FacingTracking();
+                TotemInteraction();
+                AnimationController();
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    storedHeavyState = heavyState;
+                    heavyState = HeavyState.Summoning;
+                }
+                break;
+
+            case HeavyState.Summoning:
+                gameObject.GetComponent<Rigidbody2D>().simulated = false;
+
+                if(Input.GetKeyDown(KeyCode.LeftShift))
+                {
+
+                }
+
+                if(Input.GetKeyUp(KeyCode.LeftShift))
+                {
+                    gameObject.GetComponent<Rigidbody2D>().simulated = true;
+                    heavyState = storedHeavyState;
+                }
+
+
+
+                break;
+        }
+;
         if(Input.GetKeyDown(KeyCode.LeftShift))
         {
             Blink();
@@ -61,6 +116,7 @@ public class Character2DController : MonoBehaviour
         if(collision.gameObject.tag == "Ground")
         {
             isGrounded = true;
+            jumpCounter = jumpCounterMax;
         }
     }
 
@@ -97,10 +153,11 @@ public class Character2DController : MonoBehaviour
                 break;
 
             case HeavyState.Heavy:
-                if(Input.GetButtonDown("Jump") && isGrounded == true)
+                if(Input.GetButtonDown("Jump") && jumpCounter >=1)
                 {
                     rigidbody.AddForce(new Vector2(0, jumpForce));
-                    isGrounded = false;           
+                    isGrounded = false;
+                    jumpCounter -= 1;
                 }
                 break;
         }
@@ -180,22 +237,34 @@ public class Character2DController : MonoBehaviour
 
     private void Blink()
     {
-        GameObject tempGhost;
-        tempGhost = Instantiate<GameObject>(blinkGhost, transform.position, transform.rotation);
-        StartCoroutine("GhostTravel", tempGhost);
 
-        if(Input.GetKeyUp(KeyCode.LeftShift))
+        transform.position = new Vector3(transform.position.x + (5 * transform.localScale.x), transform.position.y, transform.position.z);
+       /* if(Input.GetKeyDown(KeyCode.LeftShift))
         {
-            StopCoroutine("GhostTravel");
-            transform.position = tempGhost.transform.position;
-            Destroy(tempGhost);
-        }
+            GameObject tempGhost;
+            tempGhost = Instantiate<GameObject>(blinkGhost, transform.position, transform.rotation);
+            StartCoroutine("GhostTravel", tempGhost);
+        }*/
+        
     }
      //The key is a while statement, I know it!
     IEnumerator GhostTravel(GameObject ghost)
     {
         Vector2 ghostTargetPos = new Vector2((maxBlinkDist + ghost.transform.position.x) * transform.localScale.x , ghost.transform.position.y);
         ghost.transform.position = Vector3.Lerp(ghost.transform.position, ghostTargetPos, ghostAimSpeed);
+
+        while(Input.GetKey(KeyCode.LeftShift))
+        {
+            yield return new WaitForSeconds(1);
+        }
+
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            
+            transform.position = ghost.transform.position;
+            Destroy(ghost);
+            //StopCoroutine("GhostTravel");
+        }
         yield return null;
     }
 
