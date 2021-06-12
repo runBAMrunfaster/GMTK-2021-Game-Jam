@@ -22,9 +22,9 @@ public class Character2DController : MonoBehaviour
     Animator animator;
 
     //Ability Checks
-    bool hasBlink = false;
+    [SerializeField]  bool hasBlink = false;
     bool hasDoubleJump = false;
-    bool hasSuperJump = false;
+    [SerializeField] bool hasSuperJump = false;
     bool hasDash = false;
     bool hasBaloonJump = false;
 
@@ -35,6 +35,12 @@ public class Character2DController : MonoBehaviour
     [SerializeField] GameObject blinkGhost;
     [SerializeField] float maxBlinkDist = 5f;
     [SerializeField] float ghostAimSpeed = 1f;
+    [SerializeField] Collider2D groundCollider;
+    [SerializeField] BlinkChecker blinkChecker;
+    [SerializeField] int blinkCountMax = 1;
+    int blinkCount;
+
+    int jumpStage = 1;
     
     //Facing tracking
     private enum Facing {Left, Right};
@@ -62,11 +68,6 @@ public class Character2DController : MonoBehaviour
                 FacingTracking();
                 TotemInteraction();
                 AnimationController();
-                if (Input.GetKey(KeyCode.LeftShift))
-                {
-                    storedHeavyState = heavyState;
-                    heavyState = HeavyState.Summoning;
-                }
                 break;
 
             case HeavyState.Heavy:
@@ -76,26 +77,12 @@ public class Character2DController : MonoBehaviour
                 FacingTracking();
                 TotemInteraction();
                 AnimationController();
-                if (Input.GetKey(KeyCode.LeftShift))
-                {
-                    storedHeavyState = heavyState;
-                    heavyState = HeavyState.Summoning;
-                }
                 break;
 
             case HeavyState.Summoning:
                 gameObject.GetComponent<Rigidbody2D>().simulated = false;
+                JumpInput();
 
-                if(Input.GetKeyDown(KeyCode.LeftShift))
-                {
-
-                }
-
-                if(Input.GetKeyUp(KeyCode.LeftShift))
-                {
-                    gameObject.GetComponent<Rigidbody2D>().simulated = true;
-                    heavyState = storedHeavyState;
-                }
 
 
 
@@ -117,6 +104,7 @@ public class Character2DController : MonoBehaviour
         {
             isGrounded = true;
             jumpCounter = jumpCounterMax;
+            blinkCount = blinkCountMax;
         }
     }
 
@@ -142,25 +130,63 @@ public class Character2DController : MonoBehaviour
 
     private void JumpInput()
     {
-        switch(heavyState)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            case HeavyState.Light:
-                if(Input.GetButtonDown("Jump"))
-                {
-                    rigidbody.AddForce(new Vector2(0, jumpForce));
-                    isGrounded = false;           
-                }
-                break;
-
-            case HeavyState.Heavy:
-                if(Input.GetButtonDown("Jump") && jumpCounter >=1)
-                {
-                    rigidbody.AddForce(new Vector2(0, jumpForce));
-                    isGrounded = false;
-                    jumpCounter -= 1;
-                }
-                break;
+            jumpStage = 0;
+            StartCoroutine("BigJumpCounter");
         }
+
+        if(Input.GetKeyUp(KeyCode.Space))
+        {
+            switch (hasSuperJump)
+            {
+                case false:
+                    if(jumpCounter >= 1)
+                    {
+                        rigidbody.AddForce(new Vector2(0, jumpForce));
+                    }
+                    
+                    break;
+
+                case true:
+                    if (jumpStage <= 1 && jumpCounter >=1)
+                    {
+                        rigidbody.AddForce(new Vector2(0, jumpForce));
+                    }
+                    else if (jumpStage > 1 && jumpCounter >= 1)
+                    {
+                        rigidbody.AddForce(new Vector2(0, jumpForce * (1 + jumpStage) * 0.75f));
+                    }
+
+                    break;
+            }
+        }
+    }
+
+    IEnumerator BigJumpCounter()
+    {
+
+
+        Debug.Log("Starting Jump Counter");
+        for( int i = 1; i < 3; i++)
+        {
+            if(Input.GetKeyUp(KeyCode.Space))
+            {
+                Debug.Log("Key released! Sending Jump Stage " + jumpStage);
+                yield return jumpStage;
+                break;
+            }
+            else
+            {
+                Debug.Log("Key Held. Jump Stage is now " + jumpStage);
+                jumpStage = i;
+                yield return jumpStage;
+                yield return new WaitForSeconds(1f);
+            }
+            
+        }
+
+        yield return jumpStage;
     }
 
     private void TotemInteraction()
@@ -236,9 +262,24 @@ public class Character2DController : MonoBehaviour
     }
 
     private void Blink()
-    {
+    {   
+        if(hasBlink)
+        {
+            bool canBlink = blinkChecker.GetCanBlink();
+            if (!canBlink)
+            {
+                Debug.Log("Oh no! Touching the thing!");
+            }
 
-        transform.position = new Vector3(transform.position.x + (5 * transform.localScale.x), transform.position.y, transform.position.z);
+            else if (canBlink && blinkCount >= 1)
+            {
+                Debug.Log("We aren't touching anything!");
+                transform.position = new Vector3(transform.position.x + (maxBlinkDist * transform.localScale.x), transform.position.y, transform.position.z);
+                blinkCount -= 1;
+            }
+        }
+        
+
        /* if(Input.GetKeyDown(KeyCode.LeftShift))
         {
             GameObject tempGhost;
