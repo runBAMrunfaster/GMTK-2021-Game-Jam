@@ -7,6 +7,7 @@ public class Character2DController : MonoBehaviour
     [SerializeField] float MovementSpeed = 1;
     [SerializeField] float jumpForce = 1;
     private Rigidbody2D rigidbody;
+    [SerializeField] Vector2 holdSpot = new Vector2(-0.3, 1.5);
     private bool isGrounded;
     private enum HeavyState {Light, Heavy};
     [SerializeField] private HeavyState heavyState = HeavyState.Heavy;
@@ -72,6 +73,11 @@ public class Character2DController : MonoBehaviour
                 }
                 break;
         }
+    }
+
+    private void TotemInteraction()
+    {
+        
     }
 
 
