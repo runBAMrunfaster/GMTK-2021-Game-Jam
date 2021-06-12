@@ -46,6 +46,9 @@ public class Character2DController : MonoBehaviour
     private enum Facing {Left, Right};
     private Facing currentFacing = Facing.Right;
 
+    //System
+    bool isPaused = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -58,44 +61,50 @@ public class Character2DController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var movement = Input.GetAxis("Horizontal");
-        switch (heavyState)
+
+        if(!isPaused)
         {
-            
-            case HeavyState.Light:
-                transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
-                JumpInput();
-                FacingTracking();
-                TotemInteraction();
-                AnimationController();
-                break;
+            var movement = Input.GetAxis("Horizontal");
+            switch (heavyState)
+            {
 
-            case HeavyState.Heavy:
-                movement = Input.GetAxis("Horizontal");
-                transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
-                JumpInput();
-                FacingTracking();
-                TotemInteraction();
-                AnimationController();
-                break;
+                case HeavyState.Light:
+                    transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
+                    JumpInput();
+                    FacingTracking();
+                    TotemInteraction();
+                    AnimationController();
+                    break;
 
-            case HeavyState.Summoning:
-                gameObject.GetComponent<Rigidbody2D>().simulated = false;
-                JumpInput();
+                case HeavyState.Heavy:
+                    movement = Input.GetAxis("Horizontal");
+                    transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
+                    JumpInput();
+                    FacingTracking();
+                    TotemInteraction();
+                    AnimationController();
+                    break;
 
-
-
-
-                break;
-        }
+                case HeavyState.Summoning:
+                    gameObject.GetComponent<Rigidbody2D>().simulated = false;
+                    JumpInput();
+                    break;
+            }
 ;
-        if(Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            Blink();
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                Blink();
+            }
         }
+        else
+        {
+
+        }
+        
         
 
     }
+
 
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -106,6 +115,11 @@ public class Character2DController : MonoBehaviour
             jumpCounter = jumpCounterMax;
             blinkCount = blinkCountMax;
         }
+    }
+
+    public void SetIsPaused(bool pauseState)
+    {
+        isPaused = pauseState;
     }
 
        void OnCollisionExit2D(Collision2D collision)
