@@ -158,6 +158,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MovementSpeed: 10
   jumpForce: 500
+  holdPointX: -0.3
+  holdPointY: 1
   heavyState: 0
 --- !u!50 &468487187
 Rigidbody2D:
@@ -815,7 +817,7 @@ GameObject:
   - component: {fileID: 1999199576}
   m_Layer: 0
   m_Name: Circle
-  m_TagString: Untagged
+  m_TagString: Totem
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
