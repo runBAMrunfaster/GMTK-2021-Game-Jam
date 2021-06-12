@@ -4,15 +4,9 @@ using UnityEngine;
 
 public class AltarFirstVisit : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] bool isOneTimeEvent = false;
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
