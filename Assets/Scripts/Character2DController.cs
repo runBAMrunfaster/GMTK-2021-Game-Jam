@@ -18,8 +18,12 @@ public class Character2DController : MonoBehaviour
     bool isHoldingTotem = false;
     GameObject targetInteractable;
     GameObject heldTotem;
-
     Animator animator;
+
+    //Blink
+    [SerializeField] GameObject blinkGhost;
+    [SerializeField] float maxBlinkDist = 5f;
+    [SerializeField] float ghostAimSpeed = 1f;
     
     //Facing tracking
     private enum Facing {Left, Right};
@@ -43,6 +47,12 @@ public class Character2DController : MonoBehaviour
         FacingTracking();
         TotemInteraction();
         AnimationController();
+        if(Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            Blink();
+        }
+        
+
     }
 
 
@@ -166,6 +176,27 @@ public class Character2DController : MonoBehaviour
     private void GroundDetection()
     {
         
+    }
+
+    private void Blink()
+    {
+        GameObject tempGhost;
+        tempGhost = Instantiate<GameObject>(blinkGhost, transform.position, transform.rotation);
+        StartCoroutine("GhostTravel", tempGhost);
+
+        if(Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            StopCoroutine("GhostTravel");
+            transform.position = tempGhost.transform.position;
+            Destroy(tempGhost);
+        }
+    }
+     //The key is a while statement, I know it!
+    IEnumerator GhostTravel(GameObject ghost)
+    {
+        Vector2 ghostTargetPos = new Vector2((maxBlinkDist + ghost.transform.position.x) * transform.localScale.x , ghost.transform.position.y);
+        ghost.transform.position = Vector3.Lerp(ghost.transform.position, ghostTargetPos, ghostAimSpeed);
+        yield return null;
     }
 
 }
