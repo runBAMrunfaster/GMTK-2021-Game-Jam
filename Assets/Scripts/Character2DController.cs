@@ -7,9 +7,15 @@ public class Character2DController : MonoBehaviour
     [SerializeField] float MovementSpeed = 1;
     [SerializeField] float jumpForce = 1;
     private Rigidbody2D rigidbody;
+    [SerializeField] Vector2 holdSpot = new Vector2(-0.3, 1.5);
     private bool isGrounded;
     private enum HeavyState {Light, Heavy};
     [SerializeField] private HeavyState heavyState = HeavyState.Heavy;
+    bool isTouchingInteractable = false;
+    
+    //Facing tracking
+    private enum Facing {Left, Right};
+    private Facing currentFacing = Facing.Right;
 
     // Start is called before the first frame update
     void Start()
@@ -24,7 +30,7 @@ public class Character2DController : MonoBehaviour
         var movement = Input.GetAxis("Horizontal");
         transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
         JumpInput();
-        
+        FacingTracking();
        
     }
 
@@ -35,6 +41,16 @@ public class Character2DController : MonoBehaviour
         {
             isGrounded = true;
         }
+    }
+
+    void OnTriggerEnter2D(Collider2D other) 
+    {
+        isTouchingInteractable = true;
+    }
+
+    void OnTriggerExit2D(Collider2D other) 
+    {
+        isTouchingInteractable = false;
     }
 
     private void JumpInput()
@@ -59,6 +75,26 @@ public class Character2DController : MonoBehaviour
         }
     }
 
+    private void TotemInteraction()
+    {
+        
+    }
+
+
+    private void FacingTracking()
+    {
+        if(Input.GetKeyDown(KeyCode.A) && currentFacing != Facing.Left)
+        {
+            currentFacing = Facing.Left;
+            this.gameObject.transform.localScale = new Vector3(-1, 1, 1);
+        }
+
+        if(Input.GetKeyDown(KeyCode.D) && currentFacing != Facing.Right)
+        {
+            currentFacing = Facing.Right;
+            this.gameObject.transform.localScale = new Vector3(1, 1, 1);
+        }
+    }
     private void GroundDetection()
     {
 
