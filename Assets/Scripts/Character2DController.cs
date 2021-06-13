@@ -45,6 +45,7 @@ public class Character2DController : MonoBehaviour
     //Facing tracking
     private enum Facing {Left, Right};
     private Facing currentFacing = Facing.Right;
+    [SerializeField] GameObject textBox;
 
     //System
     bool isPaused = false;
@@ -307,12 +308,14 @@ public class Character2DController : MonoBehaviour
         {
             currentFacing = Facing.Left;
             this.gameObject.transform.localScale = new Vector3(-1, 1, 1);
+            textBox.transform.localScale = new Vector3(-0.25f, 0.25f, 0.25f);
         }
 
         if(Input.GetKeyDown(KeyCode.D) && currentFacing != Facing.Right)
         {
             currentFacing = Facing.Right;
             this.gameObject.transform.localScale = new Vector3(1, 1, 1);
+            textBox.transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
         }
     }
     private void GroundDetection()
@@ -376,5 +379,15 @@ public class Character2DController : MonoBehaviour
     public void SetJumpCounterMax(int newMax)
     {
         jumpCounterMax = newMax;
+    }
+
+    public void SetBlink(bool canBlink)
+    {
+        hasBlink = canBlink;
+    }
+
+    public void SetSuperJump(bool superJump)
+    {
+        hasSuperJump = superJump;
     }
 }
