@@ -21,4 +21,8 @@ public class SoundBank : MonoBehaviour
     public AudioClip WitchV5;
     public AudioClip WitchClip1;
     public AudioClip WitchClip2;
+
+    public AudioClip thunder;
+
+    public AudioClip zip;
 }

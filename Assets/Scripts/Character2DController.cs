@@ -129,6 +129,7 @@ public class Character2DController : MonoBehaviour
             isGrounded = true;
             jumpCounter = jumpCounterMax;
             blinkCount = blinkCountMax;
+            animator.SetInteger("ChargeCount", 0);
             audioSource.PlayOneShot(land);
         }
     }
@@ -310,7 +311,16 @@ public class Character2DController : MonoBehaviour
 
         else if (hasSuperJump)
         {
-            if(isGrounded && Input.GetButtonDown("Jump"))
+            if (isGrounded && Input.GetButtonUp("Jump"))
+            {
+                animator.SetTrigger("Jump");
+                audioSource.pitch = 1;
+                audioSource.Stop();
+                audioSource.PlayOneShot(superJump);
+                animator.SetInteger("ChargeCount", 0);
+            }
+
+            if (isGrounded && Input.GetButtonDown("Jump"))
             {
                 animator.SetInteger("ChargeCount", 1);
                 //audioSource.loop = true;
@@ -319,14 +329,6 @@ public class Character2DController : MonoBehaviour
                 StartCoroutine("JumpChargeTimer");
             }
 
-            if(isGrounded && Input.GetButtonUp("Jump"))
-            {
-                animator.SetTrigger("Jump");
-                audioSource.pitch = 1;
-                audioSource.Stop();
-                audioSource.PlayOneShot(superJump);
-                animator.SetInteger("ChargeCount", 0);
-            }
         }
 
         if(isGrounded)

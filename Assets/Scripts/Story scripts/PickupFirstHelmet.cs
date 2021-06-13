@@ -7,14 +7,22 @@ public class PickupFirstHelmet : MonoBehaviour
 {
     [SerializeField] GameObject player;
     [SerializeField] Color altarColor;
+    [SerializeField] Color evilColor;
     bool firstsceneHasPlayed = false;
     bool secondsceneHasPlayed = false;
     bool thirdsceneHasPlayed = false;
+    bool fourthsceneHasPlayed = false;
     [SerializeField] int helmetID = 0;
+
+    [SerializeField] BlackBarController blackBars;
+
 
     [SerializeField] AudioSource audioSource;
     [SerializeField] CameraFollow bgm;
     [SerializeField] SoundBank sb;
+
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -49,6 +57,12 @@ public class PickupFirstHelmet : MonoBehaviour
                 if (!thirdsceneHasPlayed)
                 {
                     StartCoroutine("ThirdHelmetScene");
+                }
+                break;
+            case 3:
+                if (!fourthsceneHasPlayed)
+                {
+                    StartCoroutine("FourthHelmetScene");
                 }
                 break;
         }
@@ -165,6 +179,42 @@ public class PickupFirstHelmet : MonoBehaviour
         playerController.SetIsPaused(false);
         playerController.SetSuperJump(true);
         secondsceneHasPlayed = true;
+
+        yield return null;
+    }
+
+    IEnumerator FourthHelmetScene()
+    {
+        Character2DController playerController = player.GetComponent<Character2DController>();
+        TextMeshPro playerText = player.GetComponentInChildren<TextMeshPro>();
+        Color playerTextColor = playerText.color;
+        playerController.SetIsPaused(true);
+
+        playerText.color = evilColor;
+        audioSource.PlayOneShot(sb.AltarV2);
+        playerText.text = "Wise you were to foresee this outcome, but foolish to press forward.";
+        yield return new WaitForSeconds(5);
+        playerText.color = playerTextColor;
+        audioSource.PlayOneShot(sb.WitchV5);
+        playerText.text = "Rats. Pulled forward by the invisible hand of fate, once again.";
+        yield return new WaitForSeconds(5);
+
+        playerText.color = evilColor;
+        audioSource.PlayOneShot(sb.AltarV1);
+        playerText.text = "With a powerful witch such as yourself as my host, I will once again cover the land in darkness.";
+        yield return new WaitForSeconds(5);
+
+        playerText.color = playerTextColor;
+        audioSource.PlayOneShot(sb.WitchV5);
+        playerText.text = "We'll see about that. I happen to know a thing or two about evil-entity-curse-removal procedues, Mr. Pinkface.";
+        yield return new WaitForSeconds(5);
+
+        bgm.FadeInBGM();
+        playerText.color = playerTextColor;
+        playerText.text = "";
+        playerController.SetIsPaused(false);
+        playerController.SetSuperJump(true);
+        fourthsceneHasPlayed = true;
 
         yield return null;
     }
