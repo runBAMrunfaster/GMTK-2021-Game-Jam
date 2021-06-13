@@ -49,6 +49,17 @@ public class Character2DController : MonoBehaviour
 
     //System
     bool isPaused = false;
+    AudioSource audioSource;
+
+    //Sound Effects
+    [SerializeField] AudioClip jump;
+    [SerializeField] AudioClip land;
+    [SerializeField] AudioClip superJump;
+    [SerializeField] AudioClip charge;
+    [SerializeField] AudioClip blink;
+    [SerializeField] AudioClip blinkFail;
+    [SerializeField] AudioClip itemGet;
+    [SerializeField] AudioClip damage;
 
     // Start is called before the first frame update
     void Start()
@@ -57,6 +68,7 @@ public class Character2DController : MonoBehaviour
         isGrounded = true;
         holdSpot = new Vector2(holdPointX, holdPointY);
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -117,6 +129,7 @@ public class Character2DController : MonoBehaviour
             isGrounded = true;
             jumpCounter = jumpCounterMax;
             blinkCount = blinkCountMax;
+            audioSource.PlayOneShot(land);
         }
     }
 
@@ -161,6 +174,7 @@ public class Character2DController : MonoBehaviour
                     if(jumpCounter >= 1)
                     {
                         rigidbody.AddForce(new Vector2(0, jumpForce));
+                        audioSource.PlayOneShot(jump);
 
                         if(heavyState == HeavyState.Heavy)
                         {
@@ -175,6 +189,7 @@ public class Character2DController : MonoBehaviour
                     if (jumpStage <= 1 && jumpCounter >=1)
                     {
                         rigidbody.AddForce(new Vector2(0, jumpForce));
+                        audioSource.PlayOneShot(jump);
                         if (heavyState == HeavyState.Heavy)
                         {
                             jumpCounter -= 1;
@@ -183,6 +198,7 @@ public class Character2DController : MonoBehaviour
                     else if (jumpStage > 1 && jumpCounter >= 1)
                     {
                         rigidbody.AddForce(new Vector2(0, jumpForce * (1 + jumpStage) * 0.75f));
+                        audioSource.PlayOneShot(superJump);
                         if (heavyState == HeavyState.Heavy)
                         {
                             jumpCounter -= 1;
@@ -287,9 +303,29 @@ public class Character2DController : MonoBehaviour
             animator.SetBool("isMoving", false);
         }
 
-        if(Input.GetButtonDown("Jump"))
+        if (Input.GetButtonDown("Jump") && !hasSuperJump)
         {
             animator.SetTrigger("Jump");
+        }
+
+        else if (hasSuperJump)
+        {
+            if(isGrounded && Input.GetButtonDown("Jump"))
+            {
+                animator.SetInteger("ChargeCount", 1);
+                //audioSource.loop = true;
+                audioSource.clip = charge;
+                audioSource.Play();
+                StartCoroutine("JumpChargeTimer");
+            }
+
+            if(isGrounded && Input.GetButtonUp("Jump"))
+            {
+                animator.SetTrigger("Jump");
+                audioSource.pitch = 1;
+                audioSource.Stop();
+                audioSource.PlayOneShot(superJump);
+            }
         }
 
         if(isGrounded)
@@ -300,6 +336,31 @@ public class Character2DController : MonoBehaviour
         {
             animator.SetBool("isGrounded", false);
         }
+    }
+
+    private IEnumerator JumpChargeTimer()
+    {
+        int timer = 0;
+
+        while(timer <= 3)
+        {
+            timer++;
+            Debug.Log("Charge timer is now equal to " + timer);
+            if (timer >= 2)
+            {
+                Debug.Log("Setting Charge Counter to 2!");
+                audioSource.pitch = 1.5f;
+                animator.SetInteger("ChargeCount", 2);
+                if(Input.GetKeyUp("Jump"))
+                {
+                    audioSource.pitch = 1;
+                }
+
+            }
+            yield return new WaitForSeconds(1);
+        }
+
+        yield return null;
     }
 
     private void FacingTracking()
@@ -330,11 +391,13 @@ public class Character2DController : MonoBehaviour
             bool canBlink = blinkChecker.GetCanBlink();
             if (!canBlink)
             {
+                audioSource.PlayOneShot(blinkFail);
                 Debug.Log("Oh no! Touching the thing!");
             }
 
             else if (canBlink && blinkCount >= 1)
             {
+                audioSource.PlayOneShot(blink);
                 Debug.Log("We aren't touching anything!");
                 transform.position = new Vector3(transform.position.x + (maxBlinkDist * transform.localScale.x), transform.position.y, transform.position.z);
                 blinkCount -= 1;

@@ -12,10 +12,19 @@ public class CameraFollow : MonoBehaviour
 
     [SerializeField] GameObject camTarget;
 
+    [SerializeField] float fadeTime = 5;
+
+    AudioSource audioSource;
+    [SerializeField] float musicMaxVolume = 0.75f;
+
     // Start is called before the first frame update
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         cameraObject = this.gameObject;
+        audioSource.volume = 0;
+        StartCoroutine("FadeIn", audioSource);
+        audioSource.Play();
     }
 
     // Update is called once per frame
@@ -25,5 +34,19 @@ public class CameraFollow : MonoBehaviour
         {
             transform.position = Vector3.Lerp(transform.position, new Vector3(camTarget.transform.position.x, camTarget.transform.position.y, cameraZoom), cameraSnapSpeed * Time.deltaTime);
         }
+    }
+
+    public IEnumerator FadeIn(AudioSource audioSource)
+    {
+        float currentTime = 0;
+        float start = audioSource.volume;
+
+        while (currentTime < fadeTime)
+        {
+            currentTime += Time.deltaTime;
+            audioSource.volume = Mathf.Lerp(start, musicMaxVolume, currentTime / fadeTime);
+            yield return null;
+        }
+        yield break;
     }
 }
