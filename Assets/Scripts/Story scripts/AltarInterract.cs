@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEditor.SceneManagement;
 
 public class AltarInterract : MonoBehaviour
 {
@@ -281,6 +282,8 @@ public class AltarInterract : MonoBehaviour
         yield return new WaitForSeconds(5);
         audioSource.PlayOneShot(sb.AltarV3);
         altarText.text = "Well shit.";
+        yield return new WaitForSeconds(5);
+        EditorSceneManager.LoadScene(0);
 
         yield return null;
     }
