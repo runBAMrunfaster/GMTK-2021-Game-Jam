@@ -12,6 +12,10 @@ public class PickupFirstHelmet : MonoBehaviour
     bool thirdsceneHasPlayed = false;
     [SerializeField] int helmetID = 0;
 
+    [SerializeField] AudioSource audioSource;
+    [SerializeField] CameraFollow bgm;
+    [SerializeField] SoundBank sb;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -58,25 +62,35 @@ public class PickupFirstHelmet : MonoBehaviour
         TextMeshPro playerText = player.GetComponentInChildren<TextMeshPro>();
         Color playerTextColor = playerText.color;
         playerController.SetIsPaused(true);
+        bgm.FadeOutBGM();
+
 
         playerText.color = altarColor;
 
+        audioSource.PlayOneShot(sb.transitionSound);
         yield return new WaitForSeconds(2);
-
+        audioSource.PlayOneShot(sb.AltarV1);
         playerText.text = "Simon the Green was a fleet-footed hero";
         yield return new WaitForSeconds(5);
+        audioSource.PlayOneShot(sb.AltarV2);
         playerText.text = "It was said that after leaping into the air, he could leap exactly one additional time.";
         yield return new WaitForSeconds(5);
+        audioSource.PlayOneShot(sb.AltarV3);
         playerText.text = "You will need this power, as the soul of a hero is a weighty thing.";
         yield return new WaitForSeconds(5);
+        audioSource.PlayOneShot(sb.AltarV4);
         playerText.text = "It is unlikely you will be able to fly as you have become accustomed to while carrying a hero's soul.";
         yield return new WaitForSeconds(5);
+        playerText.text = "";
+        yield return new WaitForSeconds(2);
 
         playerText.color = playerTextColor;
 
+        audioSource.PlayOneShot(sb.WitchV3);
         playerText.text = "I'm sure there's a moral lesson in this. Guess I'm stuck taking the long way home!";
         yield return new WaitForSeconds(5);
 
+        bgm.FadeInBGM();
         playerText.text = "";
         playerController.SetIsPaused(false);
         player.GetComponent<Character2DController>().SetJumpCounterMax(2);
@@ -92,22 +106,28 @@ public class PickupFirstHelmet : MonoBehaviour
         TextMeshPro playerText = player.GetComponentInChildren<TextMeshPro>();
         Color playerTextColor = playerText.color;
         playerController.SetIsPaused(true);
+        bgm.FadeOutBGM();
 
         playerText.color = altarColor;
 
+        audioSource.PlayOneShot(sb.transitionSound);
         yield return new WaitForSeconds(2);
 
+        audioSource.PlayOneShot(sb.AltarV1);
         playerText.text = "Cecil the Blue was a knight known to interweave his swordplay with magicks.";
         yield return new WaitForSeconds(5);
+        audioSource.PlayOneShot(sb.AltarV2);
         playerText.text = "By chanting spells even as he swung his blade, he could teleport short distances to his enemy's blindspots.";
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(6);
         playerText.text = "";
         yield return new WaitForSeconds(2);
 
         playerText.color = playerTextColor;
+        audioSource.PlayOneShot(sb.WitchV1);
         playerText.text = "That sounds like a great way to teleport yourself into a wall.";
         yield return new WaitForSeconds(5);
 
+        bgm.FadeInBGM();
         playerText.text = "";
         playerController.SetIsPaused(false);
         playerController.SetBlink(true);
@@ -123,17 +143,23 @@ public class PickupFirstHelmet : MonoBehaviour
         TextMeshPro playerText = player.GetComponentInChildren<TextMeshPro>();
         Color playerTextColor = playerText.color;
         playerController.SetIsPaused(true);
+        bgm.FadeOutBGM();
 
         playerText.color = altarColor;
 
+        audioSource.PlayOneShot(sb.transitionSound);
         yield return new WaitForSeconds(2);
+        audioSource.PlayOneShot(sb.AltarV1);
         playerText.text = "Alina the Gold was a hero whose talents were simpler, yet all the more powerful for it.";
         yield return new WaitForSeconds(5);
+        audioSource.PlayOneShot(sb.AltarV2);
         playerText.text = "She could not walk on air or warp through time, but by gathering her power she could effect a single, great leap far beyond the capabilities of a mortal man.";
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(7);
+        audioSource.PlayOneShot(sb.AltarV3);
         playerText.text = "This power, too, now is yours. Feel the power build....and release!";
         yield return new WaitForSeconds(5);
 
+        bgm.FadeInBGM();
         playerText.color = playerTextColor;
         playerText.text = "";
         playerController.SetIsPaused(false);

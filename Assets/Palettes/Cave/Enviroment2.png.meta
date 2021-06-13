@@ -330,6 +330,18 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: iPhone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -1095,8 +1107,8 @@ TextureImporter:
         serializedVersion: 2
         x: 144
         y: 0
-        width: 192
-        height: 252
+        width: 224
+        height: 251
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1410,8 +1422,8 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 32
-        height: 32
+        width: 176
+        height: 168
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1636,97 +1648,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Enviroment2_63
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 32
-        width: 144
-        height: 144
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: a425c1e051c6dcf80800000000000000
-      internalID: -8084686918373322166
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Enviroment2_64
-      rect:
-        serializedVersion: 2
-        x: 32
-        y: 0
-        width: 112
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 95b721e92750095c0800000000000000
-      internalID: -4210859661754991783
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Enviroment2_65
-      rect:
-        serializedVersion: 2
-        x: 368
-        y: 68
-        width: 113
-        height: 169
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: bc3444190cfd1aff0800000000000000
-      internalID: -26494104623627317
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Enviroment2_66
-      rect:
-        serializedVersion: 2
-        x: 512
-        y: 128
-        width: 208
-        height: 100
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 0abbda609cbcfc2a0800000000000000
-      internalID: -6714924455125206112
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: Enviroment2_17
       rect:
         serializedVersion: 2
-        x: 336
-        y: 168
-        width: 12
-        height: 24
+        x: 224
+        y: 256
+        width: 48
+        height: 79
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1736,48 +1664,6 @@ TextureImporter:
       bones: []
       spriteID: b7f6c2acc94e70890800000000000000
       internalID: -7491768093049589893
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Enviroment2_67
-      rect:
-        serializedVersion: 2
-        x: 348
-        y: 160
-        width: 20
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 0e5e8ffac14206070800000000000000
-      internalID: 8097511835642160608
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Enviroment2_68
-      rect:
-        serializedVersion: 2
-        x: 336
-        y: 192
-        width: 32
-        height: 48
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 9880693a9cb4fa9a0800000000000000
-      internalID: -6219669230970337143
       vertices: []
       indices: 
       edges: []

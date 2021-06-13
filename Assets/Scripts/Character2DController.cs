@@ -325,6 +325,7 @@ public class Character2DController : MonoBehaviour
                 audioSource.pitch = 1;
                 audioSource.Stop();
                 audioSource.PlayOneShot(superJump);
+                animator.SetInteger("ChargeCount", 0);
             }
         }
 
