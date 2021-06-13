@@ -167,6 +167,7 @@ public class Character2DController : MonoBehaviour
         {
             jumpStage = 0;
             StartCoroutine("BigJumpCounter");
+            
         }
 
         if(Input.GetKeyUp(KeyCode.Space))
@@ -201,6 +202,7 @@ public class Character2DController : MonoBehaviour
                     else if (jumpStage > 1 && jumpCounter >= 1 && isGrounded)
                     {
                         rigidbody.AddForce(new Vector2(0, jumpForce * (1 + jumpStage) * 0.75f));
+                        audioSource.Stop();
                         audioSource.PlayOneShot(superJump);
                         if (heavyState == HeavyState.Heavy)
                         {
@@ -306,7 +308,7 @@ public class Character2DController : MonoBehaviour
             animator.SetBool("isMoving", false);
         }
 
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             
             switch (hasSuperJump)
@@ -323,14 +325,16 @@ public class Character2DController : MonoBehaviour
 
                     if (jumpCounter >= 1 && isGrounded && animator.GetInteger("ChargeCount") == 0)
                     {
+                        
                         Debug.Log("Animation things should be happening right now!");
                         animator.SetInteger("ChargeCount", 1);
                         StartCoroutine("JumpChargeTimer");
                     }
 
-                    else if (jumpStage <= 1 && jumpCounter >= 1 && Input.GetButtonUp("Jump"))
+                    else if (jumpStage <= 1 && jumpCounter >= 1 && Input.GetKeyUp(KeyCode.Space))
                     {
                         animator.SetTrigger("Jump");
+                        
                     }
 
 
@@ -379,17 +383,18 @@ public class Character2DController : MonoBehaviour
         while(timer <= 3)
         {
             timer++;
-            if (!Input.GetKey("Jump"))
+            if (!Input.GetKey(KeyCode.Space))
             {
                 audioSource.pitch = 1;
                 animator.SetTrigger("Jump");
                 animator.SetInteger("ChargeCount", 0);
+                
                 break;
             }
             if (timer >= 2)
             {
+                
                 Debug.Log("Setting Charge Counter to 2!");
-                audioSource.pitch = 1.5f;
                 animator.SetInteger("ChargeCount", 2);
 
 
