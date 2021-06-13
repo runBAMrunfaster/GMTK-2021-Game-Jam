@@ -11,6 +11,24 @@ public class AltarFirstVisit : MonoBehaviour
     [SerializeField] BlackBarController blackBars;
 
 
+    //Sounds
+    [SerializeField] AudioSource bgm;
+
+    [SerializeField] AudioClip transitionSound;
+    [SerializeField] AudioClip AltarV1;
+    [SerializeField] AudioClip AltarV2;
+    [SerializeField] AudioClip AltarV3;
+    [SerializeField] AudioClip AltarV4;
+    [SerializeField] AudioClip AltarV5;
+
+    [SerializeField] AudioClip WitchV1;
+    [SerializeField] AudioClip WitchV2;
+    [SerializeField] AudioClip WitchV3;
+    [SerializeField] AudioClip WitchV4;
+    [SerializeField] AudioClip WitchV5;
+    [SerializeField] AudioClip WitchClip1;
+    [SerializeField] AudioClip WitchClip2;
+
     private void Start()
     {
         //altarText = altar.GetComponent<TextMeshPro>();
