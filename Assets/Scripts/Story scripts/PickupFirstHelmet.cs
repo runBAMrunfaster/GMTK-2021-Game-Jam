@@ -77,6 +77,7 @@ public class PickupFirstHelmet : MonoBehaviour
         Color playerTextColor = playerText.color;
         playerController.SetIsPaused(true);
         bgm.FadeOutBGM();
+        blackBars.BlackBars(true);
 
 
         playerText.color = altarColor;
@@ -103,9 +104,11 @@ public class PickupFirstHelmet : MonoBehaviour
         audioSource.PlayOneShot(sb.WitchV3);
         playerText.text = "I'm sure there's a moral lesson in this. Guess I'm stuck taking the long way home!";
         yield return new WaitForSeconds(5);
-
-        bgm.FadeInBGM();
         playerText.text = "";
+
+        blackBars.BlackBars(false);
+        bgm.FadeInBGM();
+        
         playerController.SetIsPaused(false);
         player.GetComponent<Character2DController>().SetJumpCounterMax(2);
         firstsceneHasPlayed = true;
@@ -121,6 +124,7 @@ public class PickupFirstHelmet : MonoBehaviour
         Color playerTextColor = playerText.color;
         playerController.SetIsPaused(true);
         bgm.FadeOutBGM();
+        blackBars.BlackBars(true);
 
         playerText.color = altarColor;
 
@@ -140,7 +144,13 @@ public class PickupFirstHelmet : MonoBehaviour
         audioSource.PlayOneShot(sb.WitchV1);
         playerText.text = "That sounds like a great way to teleport yourself into a wall.";
         yield return new WaitForSeconds(5);
+        playerText.color = altarColor;
+        playerText.text = "Press shift to blink. Blinking will fail if you try to blink inside of an object.";
+        playerText.color = playerTextColor;
+        yield return new WaitForSeconds(7);
 
+
+        blackBars.BlackBars(false);
         bgm.FadeInBGM();
         playerText.text = "";
         playerController.SetIsPaused(false);
@@ -158,6 +168,7 @@ public class PickupFirstHelmet : MonoBehaviour
         Color playerTextColor = playerText.color;
         playerController.SetIsPaused(true);
         bgm.FadeOutBGM();
+        blackBars.BlackBars(true);
 
         playerText.color = altarColor;
 
@@ -172,7 +183,12 @@ public class PickupFirstHelmet : MonoBehaviour
         audioSource.PlayOneShot(sb.AltarV3);
         playerText.text = "This power, too, now is yours. Feel the power build....and release!";
         yield return new WaitForSeconds(5);
+        playerText.color = altarColor;
+        playerText.text = "Hold space to charge a super jump. Release to jump higher than normal.";
+        playerText.color = playerTextColor;
+        yield return new WaitForSeconds(7);
 
+        blackBars.BlackBars(false);
         bgm.FadeInBGM();
         playerText.color = playerTextColor;
         playerText.text = "";
@@ -189,6 +205,7 @@ public class PickupFirstHelmet : MonoBehaviour
         TextMeshPro playerText = player.GetComponentInChildren<TextMeshPro>();
         Color playerTextColor = playerText.color;
         playerController.SetIsPaused(true);
+        blackBars.BlackBars(true);
 
         playerText.color = evilColor;
         audioSource.PlayOneShot(sb.AltarV2);
@@ -209,6 +226,7 @@ public class PickupFirstHelmet : MonoBehaviour
         playerText.text = "We'll see about that. I happen to know a thing or two about evil-entity-curse-removal procedues, Mr. Pinkface.";
         yield return new WaitForSeconds(5);
 
+        blackBars.BlackBars(false);
         bgm.FadeInBGM();
         playerText.color = playerTextColor;
         playerText.text = "";
