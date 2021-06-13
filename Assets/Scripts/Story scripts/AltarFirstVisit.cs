@@ -9,25 +9,11 @@ public class AltarFirstVisit : MonoBehaviour
     //[SerializeField] GameObject altar;
     [SerializeField] TextMeshPro altarText;
     [SerializeField] BlackBarController blackBars;
+    [SerializeField] AudioSource audioSource;
+    [SerializeField] CameraFollow bgm;
 
 
-    //Sounds
-    [SerializeField] AudioSource bgm;
-
-    [SerializeField] AudioClip transitionSound;
-    [SerializeField] AudioClip AltarV1;
-    [SerializeField] AudioClip AltarV2;
-    [SerializeField] AudioClip AltarV3;
-    [SerializeField] AudioClip AltarV4;
-    [SerializeField] AudioClip AltarV5;
-
-    [SerializeField] AudioClip WitchV1;
-    [SerializeField] AudioClip WitchV2;
-    [SerializeField] AudioClip WitchV3;
-    [SerializeField] AudioClip WitchV4;
-    [SerializeField] AudioClip WitchV5;
-    [SerializeField] AudioClip WitchClip1;
-    [SerializeField] AudioClip WitchClip2;
+    [SerializeField] SoundBank sb;
 
     private void Start()
     {
@@ -71,37 +57,52 @@ public class AltarFirstVisit : MonoBehaviour
 
         blackBars.BlackBars(true);
 
+        bgm.FadeOutBGM();
+        audioSource.PlayOneShot(sb.transitionSound);
         yield return new WaitForSeconds(2);
+        audioSource.PlayOneShot(sb.AltarV4);
         altarText.text = "Do you want power, child?";
         yield return new WaitForSeconds(6);
 
         altarText.text = "";
+        audioSource.PlayOneShot(sb.WitchV1);
         playerText.text = "I didn't become a witch for the cool hats.";
         yield return new WaitForSeconds(5);
+        audioSource.PlayOneShot(sb.WitchV4);
         playerText.text = "Well, not only the cool hats, at least.";
         yield return new WaitForSeconds(5);
 
         playerText.text = "";
+        audioSource.PlayOneShot(sb.AltarV2);
         altarText.text = "Past this point are three portals to three graves.";
+        audioSource.PlayOneShot(sb.AltarV3);
         yield return new WaitForSeconds(5);
+        audioSource.PlayOneShot(sb.AltarV1);
         altarText.text = "Each grave holds an artifact containing the soul and power of a hero long past.";
-        yield return new WaitForSeconds(5);
+        audioSource.PlayOneShot(sb.AltarV5);
+        yield return new WaitForSeconds(6);
+        audioSource.PlayOneShot(sb.AltarV3);
         altarText.text = "The dead need not this power. It should belong to the living.";
+        audioSource.PlayOneShot(sb.AltarV2);
         yield return new WaitForSeconds(5);
+        audioSource.PlayOneShot(sb.AltarV4);
         altarText.text = "Bring those souls to this altar and you will claim their power for your own";
 
         yield return new WaitForSeconds(5);
         altarText.text = "";
+        audioSource.PlayOneShot(sb.WitchV2);
         playerText.text = "And there's no chance that the talking altar is going to somehow double-cross me, right?";
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(6);
         playerText.text = "";
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(3);
+        audioSource.PlayOneShot(sb.WitchV5);
         playerText.text = "I accept your silent confirmation as fact. To grave robbing!";
 
         yield return new WaitForSeconds(5);
 
         blackBars.BlackBars(false);
 
+        bgm.FadeInBGM();
         playerText.text = "";
         playerController.SetIsPaused(false);
         //GetComponent<BoxCollider2D>().enabled = false;
@@ -114,17 +115,21 @@ public class AltarFirstVisit : MonoBehaviour
         Character2DController playerController = player.GetComponent<Character2DController>();
         TextMeshPro playerText = player.GetComponentInChildren<TextMeshPro>();
         playerController.SetIsPaused(true);
+        bgm.FadeOutBGM();
 
         blackBars.BlackBars(true);
 
         yield return new WaitForSeconds(2);
+        audioSource.PlayOneShot(sb.AltarV2);
         altarText.text = "You have returned with the power of Simon the Green";
         yield return new WaitForSeconds(6);
+        audioSource.PlayOneShot(sb.AltarV5);
         altarText.text = "Place his soul on this altar, child, and we may continue";
         yield return new WaitForSeconds(6);
 
         blackBars.BlackBars(false);
 
+        bgm.FadeInBGM();
         playerText.text = "";
         playerController.SetIsPaused(false);
         //GetComponent<BoxCollider2D>().enabled = false;
