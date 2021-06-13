@@ -49,6 +49,7 @@ public class Character2DController : MonoBehaviour
 
     //System
     bool isPaused = false;
+    bool isAnimPaused = false;
     AudioSource audioSource;
 
     //Sound Effects
@@ -74,7 +75,10 @@ public class Character2DController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if(!isAnimPaused)
+        {
+            AnimationController();
+        }
         if(!isPaused)
         {
             var movement = Input.GetAxis("Horizontal");
@@ -85,8 +89,7 @@ public class Character2DController : MonoBehaviour
                     transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
                     JumpInput();
                     FacingTracking();
-                    TotemInteraction();
-                    AnimationController();
+                    TotemInteraction();                    
                     PortalInteraction();
                     break;
 
@@ -96,7 +99,6 @@ public class Character2DController : MonoBehaviour
                     JumpInput();
                     FacingTracking();
                     TotemInteraction();
-                    AnimationController();
                     PortalInteraction();
                     break;
 
@@ -129,6 +131,7 @@ public class Character2DController : MonoBehaviour
             isGrounded = true;
             jumpCounter = jumpCounterMax;
             blinkCount = blinkCountMax;
+            animator.SetInteger("ChargeCount", 0);
             audioSource.PlayOneShot(land);
         }
     }
@@ -186,7 +189,7 @@ public class Character2DController : MonoBehaviour
                     break;
 
                 case true:
-                    if (jumpStage <= 1 && jumpCounter >=1)
+                    if (jumpStage <= 1 && jumpCounter >= 1)
                     {
                         rigidbody.AddForce(new Vector2(0, jumpForce));
                         audioSource.PlayOneShot(jump);
@@ -195,7 +198,7 @@ public class Character2DController : MonoBehaviour
                             jumpCounter -= 1;
                         }
                     }
-                    else if (jumpStage > 1 && jumpCounter >= 1)
+                    else if (jumpStage > 1 && jumpCounter >= 1 && isGrounded)
                     {
                         rigidbody.AddForce(new Vector2(0, jumpForce * (1 + jumpStage) * 0.75f));
                         audioSource.PlayOneShot(superJump);
@@ -303,14 +306,52 @@ public class Character2DController : MonoBehaviour
             animator.SetBool("isMoving", false);
         }
 
-        if (Input.GetButtonDown("Jump") && !hasSuperJump)
+        if (Input.GetButtonDown("Jump"))
         {
-            animator.SetTrigger("Jump");
+            
+            switch (hasSuperJump)
+            {
+                case false:
+                    if (jumpCounter >= 1)
+                    {
+                        animator.SetTrigger("Jump");
+                    }
+
+                    break;
+
+                case true:
+
+                    if (jumpCounter >= 1 && isGrounded && animator.GetInteger("ChargeCount") == 0)
+                    {
+                        Debug.Log("Animation things should be happening right now!");
+                        animator.SetInteger("ChargeCount", 1);
+                        StartCoroutine("JumpChargeTimer");
+                    }
+
+                    else if (jumpStage <= 1 && jumpCounter >= 1 && Input.GetButtonUp("Jump"))
+                    {
+                        animator.SetTrigger("Jump");
+                    }
+
+
+                    break;
+            }
         }
 
+       
+        /*
         else if (hasSuperJump)
         {
-            if(isGrounded && Input.GetButtonDown("Jump"))
+            if (isGrounded && Input.GetButtonUp("Jump"))
+            {
+                animator.SetTrigger("Jump");
+                audioSource.pitch = 1;
+                audioSource.Stop();
+                audioSource.PlayOneShot(superJump);
+                animator.SetInteger("ChargeCount", 0);
+            }
+
+            if (isGrounded && Input.GetButtonDown("Jump"))
             {
                 animator.SetInteger("ChargeCount", 1);
                 //audioSource.loop = true;
@@ -319,14 +360,7 @@ public class Character2DController : MonoBehaviour
                 StartCoroutine("JumpChargeTimer");
             }
 
-            if(isGrounded && Input.GetButtonUp("Jump"))
-            {
-                animator.SetTrigger("Jump");
-                audioSource.pitch = 1;
-                audioSource.Stop();
-                audioSource.PlayOneShot(superJump);
-            }
-        }
+        }*/
 
         if(isGrounded)
         {
@@ -345,18 +379,22 @@ public class Character2DController : MonoBehaviour
         while(timer <= 3)
         {
             timer++;
-            Debug.Log("Charge timer is now equal to " + timer);
+            if (!Input.GetKey("Jump"))
+            {
+                audioSource.pitch = 1;
+                animator.SetTrigger("Jump");
+                animator.SetInteger("ChargeCount", 0);
+                break;
+            }
             if (timer >= 2)
             {
                 Debug.Log("Setting Charge Counter to 2!");
                 audioSource.pitch = 1.5f;
                 animator.SetInteger("ChargeCount", 2);
-                if(Input.GetKeyUp("Jump"))
-                {
-                    audioSource.pitch = 1;
-                }
+
 
             }
+
             yield return new WaitForSeconds(1);
         }
 

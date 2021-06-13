@@ -36,6 +36,16 @@ public class CameraFollow : MonoBehaviour
         }
     }
 
+    public void FadeInBGM()
+    {
+        StartCoroutine("FadeIn", audioSource);
+    }
+
+    public void FadeOutBGM()
+    {
+        StartCoroutine("FadeOut", audioSource);
+    }
+
     public IEnumerator FadeIn(AudioSource audioSource)
     {
         float currentTime = 0;
@@ -45,6 +55,20 @@ public class CameraFollow : MonoBehaviour
         {
             currentTime += Time.deltaTime;
             audioSource.volume = Mathf.Lerp(start, musicMaxVolume, currentTime / fadeTime);
+            yield return null;
+        }
+        yield break;
+    }
+
+    public IEnumerator FadeOut(AudioSource audioSource)
+    {
+        float currentTime = 0;
+        float start = audioSource.volume;
+
+        while (currentTime < fadeTime)
+        {
+            currentTime += Time.deltaTime;
+            audioSource.volume = Mathf.Lerp(start, 0.25f, currentTime / fadeTime);
             yield return null;
         }
         yield break;
