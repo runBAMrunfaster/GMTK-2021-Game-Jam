@@ -74,6 +74,7 @@ public class Character2DController : MonoBehaviour
                     FacingTracking();
                     TotemInteraction();
                     AnimationController();
+                    PortalInteraction();
                     break;
 
                 case HeavyState.Heavy:
@@ -83,6 +84,7 @@ public class Character2DController : MonoBehaviour
                     FacingTracking();
                     TotemInteraction();
                     AnimationController();
+                    PortalInteraction();
                     break;
 
                 case HeavyState.Summoning:
@@ -158,6 +160,12 @@ public class Character2DController : MonoBehaviour
                     if(jumpCounter >= 1)
                     {
                         rigidbody.AddForce(new Vector2(0, jumpForce));
+
+                        if(heavyState == HeavyState.Heavy)
+                        {
+                            jumpCounter -= 1;
+                        }
+                        
                     }
                     
                     break;
@@ -166,10 +174,18 @@ public class Character2DController : MonoBehaviour
                     if (jumpStage <= 1 && jumpCounter >=1)
                     {
                         rigidbody.AddForce(new Vector2(0, jumpForce));
+                        if (heavyState == HeavyState.Heavy)
+                        {
+                            jumpCounter -= 1;
+                        }
                     }
                     else if (jumpStage > 1 && jumpCounter >= 1)
                     {
                         rigidbody.AddForce(new Vector2(0, jumpForce * (1 + jumpStage) * 0.75f));
+                        if (heavyState == HeavyState.Heavy)
+                        {
+                            jumpCounter -= 1;
+                        }
                     }
 
                     break;
@@ -210,22 +226,51 @@ public class Character2DController : MonoBehaviour
             switch(heavyState)
             {
                 case HeavyState.Light:
-                if(isTouchingInteractable && targetInteractable.tag == "Totem")
-                {
-                    targetInteractable.transform.parent = this.gameObject.transform;
-                    targetInteractable.transform.localPosition = holdSpot;
-                    heldTotem = targetInteractable;
-                    heavyState = HeavyState.Heavy;
-                }
-                break;
+                    if(isTouchingInteractable && targetInteractable.tag == "Totem")
+                    {
+                        int helmetID = targetInteractable.GetComponent<PickupFirstHelmet>().GetHelmetID();
+                        targetInteractable.GetComponent<PickupFirstHelmet>().PlayCutscene(helmetID);
+
+
+                        targetInteractable.transform.parent = this.gameObject.transform;
+                        targetInteractable.transform.localPosition = holdSpot;
+                        heldTotem = targetInteractable;
+                         heavyState = HeavyState.Heavy;
+                    }
+                    break;
 
                 case HeavyState.Heavy:
-                heldTotem.transform.parent = null;
-                heldTotem = null;
-                heavyState = HeavyState.Light;
-                break;
+                    if(targetInteractable.tag == "Portal")
+                    {
+
+                    }
+
+                    else if(targetInteractable.tag == "Altar")
+                    {
+                        
+                        heavyState = HeavyState.Light;
+                        targetInteractable.GetComponent<AltarInterract>().AcceptHelmet(heldTotem);
+                        targetInteractable.GetComponent<AltarInterract>().PlayHelmCutscene(heldTotem);
+                        //Activate generalized method in an Altar script here to play a relavant cutscene.
+
+                        heldTotem.transform.parent = null;
+                        heldTotem = null;
+                    }
+                    break;
 
             }
+        }
+    }
+
+    private void PortalInteraction()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            if (isTouchingInteractable && targetInteractable.tag == "Portal")
+            {
+                transform.position = targetInteractable.GetComponent<TeleportInteract>().GetPortalDest().transform.position;
+            }
+
         }
     }
     
@@ -302,20 +347,20 @@ public class Character2DController : MonoBehaviour
         }*/
         
     }
-     //The key is a while statement, I know it!
+    //The key is a while statement, I know it!
     IEnumerator GhostTravel(GameObject ghost)
     {
-        Vector2 ghostTargetPos = new Vector2((maxBlinkDist + ghost.transform.position.x) * transform.localScale.x , ghost.transform.position.y);
+        Vector2 ghostTargetPos = new Vector2((maxBlinkDist + ghost.transform.position.x) * transform.localScale.x, ghost.transform.position.y);
         ghost.transform.position = Vector3.Lerp(ghost.transform.position, ghostTargetPos, ghostAimSpeed);
 
-        while(Input.GetKey(KeyCode.LeftShift))
+        while (Input.GetKey(KeyCode.LeftShift))
         {
             yield return new WaitForSeconds(1);
         }
 
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
-            
+
             transform.position = ghost.transform.position;
             Destroy(ghost);
             //StopCoroutine("GhostTravel");
@@ -323,4 +368,13 @@ public class Character2DController : MonoBehaviour
         yield return null;
     }
 
+    public int GetHeldHelmetID()
+    {
+        return heldTotem.GetComponent<PickupFirstHelmet>().GetHelmetID();
+    }
+
+    public void SetJumpCounterMax(int newMax)
+    {
+        jumpCounterMax = newMax;
+    }
 }

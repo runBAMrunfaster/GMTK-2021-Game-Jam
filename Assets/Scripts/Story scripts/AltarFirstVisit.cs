@@ -8,6 +8,7 @@ public class AltarFirstVisit : MonoBehaviour
     [SerializeField] int altarDiagPhase = 1;
     //[SerializeField] GameObject altar;
     [SerializeField] TextMeshPro altarText;
+    [SerializeField] BlackBarController blackBars;
 
 
     private void Start()
@@ -28,6 +29,12 @@ public class AltarFirstVisit : MonoBehaviour
                     break;
 
                 case 2:
+                    int heldHelmet = other.gameObject.GetComponent<Character2DController>().GetHeldHelmetID();
+
+                    if(heldHelmet == 0)
+                    {
+                        StartCoroutine("SecondAltarCutscene", other.gameObject);
+                    }
 
                     break;
 
@@ -43,6 +50,8 @@ public class AltarFirstVisit : MonoBehaviour
         Character2DController playerController = player.GetComponent<Character2DController>();
         TextMeshPro playerText = player.GetComponentInChildren<TextMeshPro>();
         playerController.SetIsPaused(true);
+
+        blackBars.BlackBars(true);
 
         yield return new WaitForSeconds(2);
         altarText.text = "Do you want power, child?";
@@ -73,10 +82,36 @@ public class AltarFirstVisit : MonoBehaviour
 
         yield return new WaitForSeconds(5);
 
+        blackBars.BlackBars(false);
 
         playerText.text = "";
         playerController.SetIsPaused(false);
-        GetComponent<BoxCollider2D>().enabled = false;
+        //GetComponent<BoxCollider2D>().enabled = false;
+        altarDiagPhase = 2;
+        yield return null;
+    }
+
+    IEnumerator SecondAltarCutscene(GameObject player)
+    {
+        Character2DController playerController = player.GetComponent<Character2DController>();
+        TextMeshPro playerText = player.GetComponentInChildren<TextMeshPro>();
+        playerController.SetIsPaused(true);
+
+        blackBars.BlackBars(true);
+
+        yield return new WaitForSeconds(2);
+        altarText.text = "You have returned with the power of Simon the Green";
+        yield return new WaitForSeconds(6);
+        altarText.text = "Place his soul on this altar, child, and we may continue";
+        yield return new WaitForSeconds(6);
+
+        blackBars.BlackBars(false);
+
+        playerText.text = "";
+        playerController.SetIsPaused(false);
+        //GetComponent<BoxCollider2D>().enabled = false;
+        altarDiagPhase = 3;
+
         yield return null;
     }
 
