@@ -10,8 +10,7 @@ public class Character2DController : MonoBehaviour
     private Rigidbody2D rigidbody;
     [SerializeField] float holdPointX = -0.3f;
     [SerializeField] float holdPointY = 1.5f;
-    Vector2 holdSpot;
-    private bool isGrounded;
+    Vector2 holdSpot;    
     private enum HeavyState {Light, Heavy, Summoning};
     [SerializeField] private HeavyState heavyState = HeavyState.Heavy;
     private HeavyState storedHeavyState;
@@ -41,6 +40,8 @@ public class Character2DController : MonoBehaviour
     [SerializeField] int blinkCountMax = 1;
     int blinkCount;
 
+    [SerializeField] GroundChecker groundChecker;
+    private bool isGrounded;
     int jumpStage = 1;
     
     //Facing tracking
@@ -52,6 +53,7 @@ public class Character2DController : MonoBehaviour
     bool isPaused = false;
     bool isAnimPaused = false;
     AudioSource audioSource;
+
 
     //Sound Effects
     [SerializeField] AudioClip jump;
@@ -82,33 +84,8 @@ public class Character2DController : MonoBehaviour
         }
         if(!isPaused)
         {
-            var movement = Input.GetAxis("Horizontal");
-            switch (heavyState)
-            {
-
-                case HeavyState.Light:
-                    transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
-                    JumpInput();
-                    FacingTracking();
-                    TotemInteraction();                    
-                    PortalInteraction();
-                    break;
-
-                case HeavyState.Heavy:
-                    movement = Input.GetAxis("Horizontal");
-                    transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
-                    JumpInput();
-                    FacingTracking();
-                    TotemInteraction();
-                    PortalInteraction();
-                    break;
-
-                case HeavyState.Summoning:
-                    gameObject.GetComponent<Rigidbody2D>().simulated = false;
-                    JumpInput();
-                    break;
-            }
-;
+            GroundCheck();
+            Movement();
             if (Input.GetKeyDown(KeyCode.LeftShift))
             {
                 Blink();
@@ -123,15 +100,53 @@ public class Character2DController : MonoBehaviour
 
     }
 
+    private void Movement()
+    {
+        var movement = Input.GetAxis("Horizontal");
+        switch (heavyState)
+        {
+
+            case HeavyState.Light:
+                transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
+                JumpInput();
+                FacingTracking();
+                TotemInteraction();
+                PortalInteraction();
+                break;
+
+            case HeavyState.Heavy:
+                movement = Input.GetAxis("Horizontal");
+                transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
+                JumpInput();
+                FacingTracking();
+                TotemInteraction();
+                PortalInteraction();
+                break;
+
+            case HeavyState.Summoning:
+                gameObject.GetComponent<Rigidbody2D>().simulated = false;
+                JumpInput();
+                break;
+        }
+    }
+
+    private void GroundCheck()
+    {
+        isGrounded = groundChecker.GetIsGrounded();
+    }
+
+    private void JumpReset()
+    {
+        isGrounded = true;
+        jumpCounter = jumpCounterMax;
+        blinkCount = blinkCountMax;
+        animator.SetInteger("ChargeCount", 0);
+    }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.tag == "Ground")
+        if(isGrounded)
         {
-            isGrounded = true;
-            jumpCounter = jumpCounterMax;
-            blinkCount = blinkCountMax;
-            animator.SetInteger("ChargeCount", 0);
             audioSource.PlayOneShot(land);
         }
     }
@@ -139,14 +154,6 @@ public class Character2DController : MonoBehaviour
     public void SetIsPaused(bool pauseState)
     {
         isPaused = pauseState;
-    }
-
-       void OnCollisionExit2D(Collision2D collision)
-    {
-        if(collision.gameObject.tag == "Ground")
-        {
-            isGrounded = false;
-        }
     }
 
     void OnTriggerEnter2D(Collider2D other) 
@@ -163,12 +170,12 @@ public class Character2DController : MonoBehaviour
 
     private void JumpInput()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        /*if (Input.GetKeyDown(KeyCode.Space))
         {
             jumpStage = 0;
             StartCoroutine("BigJumpCounter");
             
-        }
+        }*/
 
         if(Input.GetKeyUp(KeyCode.Space))
         {

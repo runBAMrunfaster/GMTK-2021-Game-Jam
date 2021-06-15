@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 
 public class MainMenuButtons : MonoBehaviour
 {
@@ -9,7 +9,7 @@ public class MainMenuButtons : MonoBehaviour
     [SerializeField] GameObject aboutScreen;
     public void PlayGame(int sceneIndex)
     {
-        EditorSceneManager.LoadScene(sceneIndex);
+        SceneManager.LoadScene(sceneIndex);
     }
     public void Exit()
     {
