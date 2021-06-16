@@ -5,21 +5,27 @@ using UnityEngine;
 
 public class Character2DController : MonoBehaviour
 {
-    [SerializeField] float MovementSpeed = 1;
-    [SerializeField] float jumpForce = 1;
-    private Rigidbody2D rigidbody;
+    
     [SerializeField] float holdPointX = -0.3f;
     [SerializeField] float holdPointY = 1.5f;
     Vector2 holdSpot;    
-    private enum HeavyState {Light, Heavy, Summoning};
-    [SerializeField] private HeavyState heavyState = HeavyState.Heavy;
-    private HeavyState storedHeavyState;
+    
     bool isTouchingInteractable = false;
     GameObject touchedInteractable;
     bool isHoldingTotem = false;
     GameObject targetInteractable;
     GameObject heldTotem;
     Animator animator;
+
+    //general movement
+    private enum HeavyState { Light, Heavy, Summoning };
+    [SerializeField] private HeavyState heavyState = HeavyState.Heavy;
+    private HeavyState storedHeavyState;
+    [SerializeField] float MovementSpeed = 1;
+    [SerializeField] float MaxSpeed = 10f;
+    [SerializeField] float jumpForce = 1;
+    private Rigidbody2D rigidbody;
+    private bool isMoving;
 
     //Ability Checks
     [SerializeField]  bool hasBlink = false;
@@ -65,6 +71,9 @@ public class Character2DController : MonoBehaviour
     [SerializeField] AudioClip itemGet;
     [SerializeField] AudioClip damage;
 
+    //Debug Variables
+    private float currentXVelocity;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -73,19 +82,26 @@ public class Character2DController : MonoBehaviour
         holdSpot = new Vector2(holdPointX, holdPointY);
         animator = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
+
     }
 
     // Update is called once per frame
     void Update()
     {
+        //Debug Variable; remove when finished using it.
+        currentXVelocity = rigidbody.velocity.x;
+
         if(!isAnimPaused)
         {
             AnimationController();
         }
         if(!isPaused)
         {
+            FacingTracking();
+            TotemInteraction();
+            PortalInteraction();
             GroundCheck();
-            Movement();
+            JumpInput();
             if (Input.GetKeyDown(KeyCode.LeftShift))
             {
                 Blink();
@@ -100,34 +116,26 @@ public class Character2DController : MonoBehaviour
 
     }
 
+    private void FixedUpdate()
+    {
+        if(!isPaused)
+        {
+            Movement();
+            //JumpInput();
+        }
+
+    }
+
     private void Movement()
     {
         var movement = Input.GetAxis("Horizontal");
-        switch (heavyState)
+        float Yvelocity = rigidbody.velocity.y;
+
+        if(rigidbody.velocity.x < MaxSpeed && rigidbody.velocity.x > MaxSpeed * -1)
         {
-
-            case HeavyState.Light:
-                transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
-                JumpInput();
-                FacingTracking();
-                TotemInteraction();
-                PortalInteraction();
-                break;
-
-            case HeavyState.Heavy:
-                movement = Input.GetAxis("Horizontal");
-                transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
-                JumpInput();
-                FacingTracking();
-                TotemInteraction();
-                PortalInteraction();
-                break;
-
-            case HeavyState.Summoning:
-                gameObject.GetComponent<Rigidbody2D>().simulated = false;
-                JumpInput();
-                break;
+            rigidbody.AddForce(new Vector2(movement * MovementSpeed * Time.deltaTime,0), ForceMode2D.Impulse);
         }
+        
     }
 
     private void GroundCheck()
@@ -137,7 +145,6 @@ public class Character2DController : MonoBehaviour
 
     private void JumpReset()
     {
-        isGrounded = true;
         jumpCounter = jumpCounterMax;
         blinkCount = blinkCountMax;
         animator.SetInteger("ChargeCount", 0);
@@ -147,6 +154,7 @@ public class Character2DController : MonoBehaviour
     {
         if(isGrounded)
         {
+            JumpReset();
             audioSource.PlayOneShot(land);
         }
     }
@@ -184,7 +192,7 @@ public class Character2DController : MonoBehaviour
                 case false:
                     if(jumpCounter >= 1)
                     {
-                        rigidbody.AddForce(new Vector2(0, jumpForce));
+                        rigidbody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
                         audioSource.PlayOneShot(jump);
 
                         if(heavyState == HeavyState.Heavy)
@@ -199,7 +207,7 @@ public class Character2DController : MonoBehaviour
                 case true:
                     if (jumpStage <= 1 && jumpCounter >= 1)
                     {
-                        rigidbody.AddForce(new Vector2(0, jumpForce));
+                        rigidbody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
                         audioSource.PlayOneShot(jump);
                         if (heavyState == HeavyState.Heavy)
                         {
@@ -208,7 +216,7 @@ public class Character2DController : MonoBehaviour
                     }
                     else if (jumpStage > 1 && jumpCounter >= 1 && isGrounded)
                     {
-                        rigidbody.AddForce(new Vector2(0, jumpForce * (1 + jumpStage) * 0.75f));
+                        rigidbody.AddForce(new Vector2(0, jumpForce * (1 + jumpStage) * 0.75f), ForceMode2D.Impulse);
                         audioSource.Stop();
                         audioSource.PlayOneShot(superJump);
                         if (heavyState == HeavyState.Heavy)
@@ -305,6 +313,14 @@ public class Character2DController : MonoBehaviour
     
     private void AnimationController()
     {
+        if(isGrounded)
+        {
+            animator.SetBool("isGrounded", true);
+        }
+        else if(!isGrounded)
+        {
+            animator.SetBool("isGrounded", true);
+        }
         if(Input.GetAxis("Horizontal") != 0)
         {
             animator.SetBool("isMoving", true);
